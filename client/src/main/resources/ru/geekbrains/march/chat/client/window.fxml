@@ -9,10 +9,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <VBox fx:controller="ru.geekbrains.march.chat.client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="CENTER">
-    <TextArea VBox.vgrow="ALWAYS" editable="false"/>
+    <TextArea fx:id="msgArea" VBox.vgrow="ALWAYS" editable="false"/>
     <HBox>
-        <TextField HBox.hgrow="ALWAYS" promptText="Введите сообщение"/>
-        <Button text="Отправить"/>
+        <TextField  fx:id="msgField" HBox.hgrow="ALWAYS" promptText="Введите сообщение"/>
+        <Button text="Отправить" onAction="#sendMsg"/>
     </HBox>
 
 </VBox>
