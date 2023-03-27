@@ -3,7 +3,6 @@ package ru.geekbrains.march.chat.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,10 +63,12 @@ public class Server {
         return false; // если прошлись по всем клиентам, и ни у кого не нашли такой ник, то говорим, что не занят
     }
 
-    public void sendPrivateMsg(String toNickName, String msg, String fromNickName) throws IOException {
+    public void sendPrivateMsg(ClientHandler fromNickName, String msg, String toNickName) throws IOException{
+        //     /w Bob Hello, Bob!
         for (ClientHandler client: clients) {
-            if (client.getUsername().equals(toNickName)){
-                client.sendMessage(fromNickName + " ---> "+ toNickName + " " + msg);
+            if (toNickName.equals(client.getUsername())){
+                client.sendMessage(fromNickName.getUsername() + " ---> "+ toNickName + " " + msg);
+                fromNickName.sendMessage (fromNickName.getUsername() + " ---> "+ toNickName + " " + msg);
             }
         }
     }

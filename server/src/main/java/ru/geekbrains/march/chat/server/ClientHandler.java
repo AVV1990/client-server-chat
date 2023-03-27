@@ -55,7 +55,7 @@ public class ClientHandler {
 
 
                     if (message.startsWith("/")) {
-                        String[] msg = message.split("\\s");
+                        String[] msg = message.split("\\s", 3);
 
                         // дом. задание: подсчет количества сообщений
                         if (msg[0].equals("/stat")) {
@@ -69,18 +69,20 @@ public class ClientHandler {
                             continue;
                         }
 
+                        if (msg[0].equals("/w")) {
+
+                            System.out.println("Вошли в цикл с отсылкой личного сообщения");
+                            server.sendPrivateMsg(this, msg[2], msg[1]);
+                            continue;
+                        }
+
                         //  дом. задание: если от клиента приходит сообщение вида "exit",  то клиент отключается от сервера
                         if (msg[0].equals("/exit")) {
                             socket.close();
                             break;
                         }
 
-                        if (msg[0].equals("/w")) {
-                            System.out.println("Вошли в цикл с отсылкой личного сообщения");
-                            server.sendPrivateMsg(msg[1], msg[2], username);
-                            //todo отправить себе
-                            continue;
-                        }
+
                     }
                     countMsg++;
                     server.broadcastMassage( username + ": "+ message); //  когда сообщение приходит, сервер, разошли это сообщение абсолютно всем
