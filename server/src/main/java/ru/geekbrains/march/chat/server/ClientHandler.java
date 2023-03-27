@@ -32,6 +32,7 @@ public class ClientHandler {
         new Thread (()-> {
             // try и catch вынесли за пределы while,  чтобы при отключении клиента в консоль не выпадала ошибка
             try {
+                int countMsg = 0;
                 while(true) { // будет 2 цикла - 1 цикл это авторизации
                     String msg = in.readUTF(); // ждем сообщение
                     if (msg.startsWith("login") ) {
@@ -50,12 +51,17 @@ public class ClientHandler {
                 }
                 // 2 ой цикл общения с клиентом
                 while(true){
-
                     String message =  in.readUTF();
 
-                    if (message.startsWith("/")) {
 
+                    if (message.startsWith("/")) {
                         String[] msg = message.split("\\s");
+
+                        // дом. задание: подсчет количества сообщений
+                        if (msg[0].equals("/stat")) {
+                            out.writeUTF("Количество сообщений: " + countMsg);
+                            continue;
+                        }
 
                         // дом. задание: если от клиента приходит сообщение вида "who_am_i",  сервер отвечает этмоу клиенту его имя
                         if (msg[0].equals("/who_am_i")) {
@@ -76,7 +82,9 @@ public class ClientHandler {
                             continue;
                         }
                     }
+                    countMsg++;
                     server.broadcastMassage( username + ": "+ message); //  когда сообщение приходит, сервер, разошли это сообщение абсолютно всем
+
                 }
 
             }

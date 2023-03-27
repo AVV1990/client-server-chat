@@ -67,7 +67,7 @@ public class Server {
     public void sendPrivateMsg(String toNickName, String msg, String fromNickName) throws IOException {
         for (ClientHandler client: clients) {
             if (client.getUsername().equals(toNickName)){
-                client.sendMessage(fromNickName + " ---> "+ toNickName +" "+ msg);
+                client.sendMessage(fromNickName + " ---> "+ toNickName + " " + msg);
             }
         }
     }
