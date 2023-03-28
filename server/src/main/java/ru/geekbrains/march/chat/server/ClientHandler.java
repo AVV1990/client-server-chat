@@ -54,9 +54,10 @@ public class ClientHandler {
                 while(true){
                     String msg =  in.readUTF();
                     if (msg.startsWith("/")) {
-                        executeCommand (msg);
-                        continue;
+                      executeCommand (msg);
+                      continue;
                     }
+
 
 
                     //if (message.startsWith("/")) {
@@ -106,8 +107,15 @@ public class ClientHandler {
         // /w Bob  Неllо, Bob!!!!
         if (cmd.startsWith("/")) {
             String [] tokens = cmd.split("\\s",3);
-            server.sendPrivateMassage(this,tokens [1],tokens [2]);
-            return;
+            if (cmd.equals("/w")) {
+                server.sendPrivateMassage(this,tokens [1],tokens [2]);
+                return;
+            }
+            if (cmd.equals("/change_nik")) {
+                // /change_nik myNewNickname
+                server.changeNick(this,tokens [1]);
+                return;
+            }
         }
     }
 
