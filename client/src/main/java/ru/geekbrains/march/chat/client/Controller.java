@@ -1,5 +1,7 @@
 package ru.geekbrains.march.chat.client;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -13,7 +15,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class Controller {
+public class Controller implements Initializable {
+
+    @FXML
+    ListView <String> clientList;
 
     @FXML
     TextArea msgArea;
@@ -40,14 +45,22 @@ public class Controller {
            loginPanel.setManaged(false);
            msgPanel.setVisible(true);
            msgPanel.setManaged(true);
+           clientList.setVisible(true);
+           clientList.setManaged(true);
         } else {
             loginPanel.setVisible(true);
             loginPanel.setManaged(true);
             msgPanel.setVisible(false);
             msgPanel.setManaged(false);
+            clientList.setVisible(false);
+            clientList.setManaged(false);
         }
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        setUsername(null);
+    }
 
     //  при на нажатии на кнопку логин
     public void login () {
@@ -98,6 +111,22 @@ public class Controller {
                     // цикл общения
                     while (true) {
                         String msg = in.readUTF();
+
+                        if (msg.startsWith("/")) {
+                            if (msg.startsWith("/clients_list")) {
+                                String [] tokens = msg.split("\\s");
+                                //  /clients_list Bob Jack Max
+
+                                //  это  поток джава fx,  чтобы не было ошибки
+                                Platform.runLater(()-> {
+                                    clientList.getItems().clear(); //  все имена, которые были,  очистить
+                                    for (int i = 1; i < tokens.length; i++) {
+                                        clientList.getItems().add(tokens[i]);
+                                    }
+                               });
+                            }
+                            continue;
+                        }
                         msgArea.appendText(msg + "\n");
                     }
 
@@ -131,7 +160,6 @@ public class Controller {
 
     public void disconnect ()  {
          setUsername(null); // username сбрасываем
-
           try {
                if (socket != null) {
                    socket.close();
@@ -140,6 +168,17 @@ public class Controller {
                 e.printStackTrace();
            }
     }
+
+    public void logoutBtnAction()  {
+        try {
+            socket.close();
+            msgArea.clear();
+
+        } catch (IOException e) {
+            disconnect();
+        }
+    }
+
 }
 
 

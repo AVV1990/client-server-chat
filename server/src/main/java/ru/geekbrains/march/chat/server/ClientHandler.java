@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class ClientHandler {
 
@@ -37,7 +38,7 @@ public class ClientHandler {
                     String msg = in.readUTF(); // ждем сообщение
                     if (msg.startsWith("login") ) {
                         String usernameFromLogin = msg.split("\\s") [1]; //  у клиентам запрашиваем имя, которое он указал
-                        if (server.isNickBusy(usernameFromLogin)) {
+                        if (server.isUserOnLine(usernameFromLogin)) {
                             sendMessage("login_failed Current nickname is already used");
                             continue;
                         }
@@ -51,41 +52,44 @@ public class ClientHandler {
                 }
                 // 2 ой цикл общения с клиентом
                 while(true){
-                    String message =  in.readUTF();
-
-
-                    if (message.startsWith("/")) {
-                        String[] msg = message.split("\\s", 3);
-
-                        // дом. задание: подсчет количества сообщений
-                        if (msg[0].equals("/stat")) {
-                            out.writeUTF("Количество сообщений: " + countMsg);
-                            continue;
-                        }
-
-                        // дом. задание: если от клиента приходит сообщение вида "who_am_i",  сервер отвечает этмоу клиенту его имя
-                        if (msg[0].equals("/who_am_i")) {
-                            out.writeUTF("you are " + username);
-                            continue;
-                        }
-
-                        if (msg[0].equals("/w")) {
-
-                            System.out.println("Вошли в цикл с отсылкой личного сообщения");
-                            server.sendPrivateMsg(this, msg[2], msg[1]);
-                            continue;
-                        }
-
-                        //  дом. задание: если от клиента приходит сообщение вида "exit",  то клиент отключается от сервера
-                        if (msg[0].equals("/exit")) {
-                            socket.close();
-                            break;
-                        }
-
-
+                    String msg =  in.readUTF();
+                    if (msg.startsWith("/")) {
+                        executeCommand (msg);
+                        continue;
                     }
-                    countMsg++;
-                    server.broadcastMassage( username + ": "+ message); //  когда сообщение приходит, сервер, разошли это сообщение абсолютно всем
+
+
+                    //if (message.startsWith("/")) {
+//                        String[] msg = message.split("\\s", 3);
+
+
+//                        if (msg[0].equals("/stat")) {
+//                            out.writeUTF("Количество сообщений: " + countMsg);
+//                            continue;
+//                        }
+
+//                        if (msg[0].equals("/who_am_i")) {
+//                            out.writeUTF("you are " + username);
+//                            continue;
+//                        }
+
+//                        if (msg[0].equals("/w")) {
+                            //      /w Bob Hello, Bob!
+
+//                            System.out.println("Вошли в цикл с отсылкой личного сообщения");
+//                            server.sendPrivateMsg(this, msg[2], msg[1]);
+//                            continue;
+//                        }
+
+//                        if (msg[0].equals("/exit")) {
+//                            socket.close();
+//                            break;
+//                        }
+
+
+                  //  }
+                   // countMsg++;
+                    server.broadcastMassage( username + ": "+ msg); //  когда сообщение приходит, сервер, разошли это сообщение абсолютно всем
 
                 }
 
@@ -98,11 +102,24 @@ public class ClientHandler {
         }).start();
     }
 
-    public  void sendMessage (String message) throws IOException {
-        out.writeUTF(message);
+    private void executeCommand (String cmd) {
+        // /w Bob  Неllо, Bob!!!!
+        if (cmd.startsWith("/")) {
+            String [] tokens = cmd.split("\\s",3);
+            server.sendPrivateMassage(this,tokens [1],tokens [2]);
+            return;
+        }
     }
 
-    public void disconnect () {
+    public  void sendMessage (String message){
+        try {
+            out.writeUTF(message);
+        } catch (IOException e) {
+            disconnect();
+        }
+    }
+
+    public void disconnect ()  {
         server.unsubscribe(this); //  сервер, хотим  отписаться от рассылки
         if (socket != null){
             try {
@@ -112,9 +129,6 @@ public class ClientHandler {
             }
         }
     }
-
-
-
 
 
 
