@@ -22,7 +22,10 @@ public class Controller implements Initializable {
     TextArea msgArea;
 
     @FXML
-    TextField msgField, loginNameField;
+    TextField msgField, loginField;
+
+    @FXML
+    PasswordField passwordField;
 
     @FXML
     HBox loginPanel, msgPanel;
@@ -54,18 +57,18 @@ public class Controller implements Initializable {
 
     //  при на нажатии на кнопку логин
     public void login () {
+        if (loginField.getText().isEmpty()) {
+            showErrorAlert ("Имяпользователя не может быть пустым");
+            return; // делаем return  чтобы не отправить серваку пустой логин  и пароль
+        }
+
         if (socket == null || socket.isClosed()) {
             connect();
         }
 
-        if (loginNameField.getText().isEmpty()) {
-           Alert alert = new Alert(Alert.AlertType.ERROR, "логин и (или) пароль не могут быть пустыми", ButtonType.OK);
-           alert.showAndWait();
-           return; // делаем return  чтобы не отправить серваку пустой логин  и пароль
-        }
 
         try {
-            out.writeUTF("login " + loginNameField.getText());
+            out.writeUTF("login " + loginField.getText() + " " + passwordField.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -128,8 +131,7 @@ public class Controller implements Initializable {
             });
             t.start();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно подключиться к серверу", ButtonType.OK);
-            alert.showAndWait();
+            showErrorAlert ("Невозможно подключиться к серверу");
         }
     }
 
@@ -141,9 +143,8 @@ public class Controller implements Initializable {
             msgField.requestFocus(); // запросить фокус, чтобы курсор был в этом окне текстфилд
         } catch (IOException e) {
             // покажем конкретную ошибку
+            showErrorAlert ("Невозможно отправить сообщение");
 
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно отправить сообщение", ButtonType.OK);
-            alert.showAndWait();
         }
     }
 
@@ -167,6 +168,15 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             disconnect();
         }
+    }
+
+
+    public void showErrorAlert (String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setContentText(msg);
+        alert.setTitle("March Chat FX");
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 
 }

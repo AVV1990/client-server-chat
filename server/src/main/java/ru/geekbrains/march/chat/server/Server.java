@@ -10,10 +10,16 @@ public class Server {
 
     private int port;
     private List<ClientHandler> clients;
+    private AuthenticationProvider authenticationProvider; // подвязали интерфейс
+
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider; // добавили геттер
+    }
 
     public Server(int port) {
         this.port = port;
         this.clients = new ArrayList<>(); // когда сервер запускается, список клиентов пустой.
+        this.authenticationProvider = new InMemoryAuthenticationProvider (); //  в качестве реализации взяли
 
         // подключаем клиентов
         try (ServerSocket serverSocket = new ServerSocket(port)) {
