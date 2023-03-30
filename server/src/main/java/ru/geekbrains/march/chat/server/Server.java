@@ -70,12 +70,14 @@ public class Server {
         sender.sendMessage("Невозможно отправить сообщение пользователю: " + receiverUsername + " Такого пользователя нет в сети");
     }
 
-    public synchronized void changeNick (ClientHandler username, String newUsername) {
+    public synchronized void changeNick(ClientHandler client, String newUsername, String oldUserName) {
+        System.out.println("Клиент хочет изменить на "+ newUsername);
         for (ClientHandler c : clients) {
-            if (c.getUsername().equals(username)) {
-                 // /change_nik myNewNickname - такая команда
-                c.getUsername().replaceAll(username.getUsername(), newUsername);
-                broadcastMassage("Клиент " + username.getUsername() + " изменил ник на: " + newUsername);
+            if (c.getUsername().equals(client.getUsername())) {
+                // /change_nik myNewNickname - такая команда
+                c.setUsername(newUsername);
+                broadcastMassage("Клиент " + oldUserName + " изменил ник на: " + newUsername);
+                broadcastClientsList();
             }
         }
 

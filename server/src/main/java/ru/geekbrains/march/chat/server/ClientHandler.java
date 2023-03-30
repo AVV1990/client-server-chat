@@ -18,7 +18,9 @@ public class ClientHandler {
     private DataOutputStream out; // исходящий поток
     private String username; //  имя пользователя
 
-
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getUsername() {
         return username;
@@ -52,6 +54,7 @@ public class ClientHandler {
                 }
                 // 2 ой цикл общения с клиентом
                 while(true){
+                    System.out.println("Это команда");
                     String msg =  in.readUTF();
                     if (msg.startsWith("/")) {
                       executeCommand (msg);
@@ -103,19 +106,20 @@ public class ClientHandler {
         }).start();
     }
 
-    private void executeCommand (String cmd) {
+    private void executeCommand(String msg) {
+        System.out.println("Вошли в метод выполнения команды");
         // /w Bob  Неllо, Bob!!!!
-        if (cmd.startsWith("/")) {
-            String [] tokens = cmd.split("\\s",3);
-            if (cmd.equals("/w")) {
-                server.sendPrivateMassage(this,tokens [1],tokens [2]);
-                return;
-            }
-            if (cmd.equals("/change_nik")) {
-                // /change_nik myNewNickname
-                server.changeNick(this,tokens [1]);
-                return;
-            }
+
+        String[] tokens = msg.split("\\s", 3);
+        String cmd = tokens[0];
+        if (cmd.equals("/w")) {
+            server.sendPrivateMassage(this, tokens[1], tokens[2]);
+            return;
+        }
+        if (cmd.equals("/change_nik")) {
+            System.out.println("Вошли в иф изменения ника");
+            // /change_nik myNewNickname
+            server.changeNick(this, tokens[1], username);
         }
     }
 
