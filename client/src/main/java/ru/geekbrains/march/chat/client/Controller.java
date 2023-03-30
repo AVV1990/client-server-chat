@@ -1,7 +1,6 @@
 package ru.geekbrains.march.chat.client;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -12,7 +11,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -24,7 +22,7 @@ public class Controller implements Initializable {
     TextArea msgArea;
 
     @FXML
-    TextField msgField, usernameField;
+    TextField msgField, loginNameField;
 
     @FXML
     HBox loginPanel, msgPanel;
@@ -40,21 +38,13 @@ public class Controller implements Initializable {
 
     public void setUsername (String username) {
         this.username = username;
-        if (username != null) {
-           loginPanel.setVisible(false);
-           loginPanel.setManaged(false);
-           msgPanel.setVisible(true);
-           msgPanel.setManaged(true);
-           clientList.setVisible(true);
-           clientList.setManaged(true);
-        } else {
-            loginPanel.setVisible(true);
-            loginPanel.setManaged(true);
-            msgPanel.setVisible(false);
-            msgPanel.setManaged(false);
-            clientList.setVisible(false);
-            clientList.setManaged(false);
-        }
+        boolean usernameIsNull = username == null;
+        loginPanel.setVisible(usernameIsNull);
+        loginPanel.setManaged(usernameIsNull);
+        msgPanel.setVisible(!usernameIsNull);
+        msgPanel.setManaged(!usernameIsNull);
+        clientList.setVisible(!usernameIsNull);
+        clientList.setManaged(!usernameIsNull);
     }
 
     @Override
@@ -68,14 +58,14 @@ public class Controller implements Initializable {
             connect();
         }
 
-        if (usernameField.getText().isEmpty()) {
-           Alert alert = new Alert(Alert.AlertType.ERROR, "Имя пользователя не может быть пустым", ButtonType.OK);
+        if (loginNameField.getText().isEmpty()) {
+           Alert alert = new Alert(Alert.AlertType.ERROR, "логин и (или) пароль не могут быть пустыми", ButtonType.OK);
            alert.showAndWait();
-           return; // делаем return  чтобы не отправить серваку пустой логин
+           return; // делаем return  чтобы не отправить серваку пустой логин  и пароль
         }
 
         try {
-            out.writeUTF("login " + usernameField.getText());
+            out.writeUTF("login " + loginNameField.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }

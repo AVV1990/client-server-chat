@@ -39,13 +39,11 @@ public class ClientHandler {
                 while(true) { // будет 2 цикла - 1 цикл это авторизации
                     String msg = in.readUTF(); // ждем сообщение
                     if (msg.startsWith("login") ) {
-                        String usernameFromLogin = msg.split("\\s") [1]; //  у клиентам запрашиваем имя, которое он указал
+                        String usernameFromLogin = msg.split("\\s") [1]; //  у клиента запрашиваем имя, которое он указал
                         if (server.isUserOnLine(usernameFromLogin)) {
                             sendMessage("login_failed Current nickname is already used");
                             continue;
                         }
-
-
                         username = usernameFromLogin; //  если он не занят, то присваиваем его
                         sendMessage("login_ok " + username);
                         server.subscribe(this);//  после авторизации просим подписать клиента на рассылку
@@ -54,7 +52,7 @@ public class ClientHandler {
                 }
                 // 2 ой цикл общения с клиентом
                 while(true){
-                    System.out.println("Это команда");
+
                     String msg =  in.readUTF();
                     if (msg.startsWith("/")) {
                       executeCommand (msg);
@@ -106,20 +104,33 @@ public class ClientHandler {
         }).start();
     }
 
-    private void executeCommand(String msg) {
-        System.out.println("Вошли в метод выполнения команды");
+    private void executeCommand(String cmd) {
         // /w Bob  Неllо, Bob!!!!
-
-        String[] tokens = msg.split("\\s", 3);
-        String cmd = tokens[0];
-        if (cmd.equals("/w")) {
+        if (cmd.startsWith("/w")) {
+            String[] tokens = cmd.split("\\s+", 3); //       \\s+ убирает возможные пробелы
+            if (tokens.length != 3) {
+                sendMessage("Server: Введена некорректная команда ");
+                return;
+            }
             server.sendPrivateMassage(this, tokens[1], tokens[2]);
             return;
         }
-        if (cmd.equals("/change_nik")) {
-            System.out.println("Вошли в иф изменения ника");
-            // /change_nik myNewNickname
-            server.changeNick(this, tokens[1], username);
+        // /change_nik myNewNickname
+        if (cmd.startsWith("/change_niсk")) {
+            String [] tokens = cmd.split("\\s+");  //       \\s+ убирает возможные пробелы
+            if (tokens.length != 2) {
+                sendMessage("Server: Введена некорректная команда ");
+                return;
+            }
+            String newNickname =  tokens[1];
+            if (server.isUserOnLine(newNickname)) {
+                sendMessage("Server: Такой ник уже занят");
+                return;
+            }
+            username = newNickname;
+            sendMessage("Server: Вы изменили никнейм на " + newNickname);
+            server.broadcastClientsList();
+
         }
     }
 

@@ -70,18 +70,6 @@ public class Server {
         sender.sendMessage("Невозможно отправить сообщение пользователю: " + receiverUsername + " Такого пользователя нет в сети");
     }
 
-    public synchronized void changeNick(ClientHandler client, String newUsername, String oldUserName) {
-        System.out.println("Клиент хочет изменить на "+ newUsername);
-        for (ClientHandler c : clients) {
-            if (c.getUsername().equals(client.getUsername())) {
-                // /change_nik myNewNickname - такая команда
-                c.setUsername(newUsername);
-                broadcastMassage("Клиент " + oldUserName + " изменил ник на: " + newUsername);
-                broadcastClientsList();
-            }
-        }
-
-    }
 
     public synchronized boolean isUserOnLine (String username) {
        for (ClientHandler clientHandler : clients) {
@@ -103,6 +91,11 @@ public class Server {
         for (ClientHandler clientHandler : clients) { // шлем каждому список клиентов
             clientHandler.sendMessage(clientsList);
         }
+    }
+
+
+    public synchronized void nikList (){
+
     }
 
      // public void sendPrivateMsg(ClientHandler fromNickName, String msg, String toNickName) throws IOException{

@@ -11,7 +11,7 @@
 <?import javafx.scene.control.ListView?>
 <VBox fx:controller="ru.geekbrains.march.chat.client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="CENTER">
     <HBox fx:id="loginPanel">
-        <TextField  fx:id="usernameField" HBox.hgrow="ALWAYS" promptText="Укажите свой ник" onAction="#login"/>
+        <TextField fx:id="loginNameField" HBox.hgrow="ALWAYS" promptText="Укажите свой ник" onAction="#login"/>
         <Button text="Войти" onAction="#login"/>
     </HBox>
 
