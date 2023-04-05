@@ -10,7 +10,7 @@ public class Server {
 
     private int port;
     private List<ClientHandler> clients;
-    private AuthenticationProvider authenticationProvider; // подвязали интерфейс
+    private DbAuthenticationProvider authenticationProvider; // подвязали интерфейс
 
     public AuthenticationProvider getAuthenticationProvider() {
         return authenticationProvider; // добавили геттер
@@ -19,7 +19,8 @@ public class Server {
     public Server(int port) {
         this.port = port;
         this.clients = new ArrayList<>(); // когда сервер запускается, список клиентов пустой.
-        this.authenticationProvider = new InMemoryAuthenticationProvider (); //  в качестве реализации взяли
+        this.authenticationProvider = new DbAuthenticationProvider (); //  в качестве реализации взяли
+        this.authenticationProvider.connect();
 
         // подключаем клиентов
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -37,8 +38,9 @@ public class Server {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            authenticationProvider.disconnect();
         }
-
     }
 
 

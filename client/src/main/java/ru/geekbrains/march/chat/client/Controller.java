@@ -58,7 +58,7 @@ public class Controller implements Initializable {
     //  при на нажатии на кнопку логин
     public void login () {
         if (loginField.getText().isEmpty()) {
-            showErrorAlert ("Имяпользователя не может быть пустым");
+            showErrorAlert ("Имя пользователя не может быть пустым");
             return; // делаем return  чтобы не отправить серваку пустой логин  и пароль
         }
 
