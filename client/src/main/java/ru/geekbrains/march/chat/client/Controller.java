@@ -6,11 +6,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -36,8 +35,6 @@ public class Controller implements Initializable {
     private DataInputStream in;
     private DataOutputStream out;
     private String username; //  клиент должен знать под каким логином он сидит
-
-
 
     public void setUsername (String username) {
         this.username = username;
@@ -105,6 +102,9 @@ public class Controller implements Initializable {
                     while (true) {
                         String msg = in.readUTF();
 
+//                      добавление локальной истории в текстовый файл на клиенте
+                        writeHistoryOfChat(msg);
+
                         if (msg.startsWith("/")) {
                             if (msg.startsWith("/clients_list")) {
                                 String [] tokens = msg.split("\\s");
@@ -121,6 +121,9 @@ public class Controller implements Initializable {
                             continue;
                         }
                         msgArea.appendText(msg + "\n");
+
+                        showHistoryOfChat();
+
                     }
 
                 } catch (IOException e) {
@@ -132,6 +135,26 @@ public class Controller implements Initializable {
             t.start();
         } catch (IOException e) {
             showErrorAlert ("Невозможно подключиться к серверу");
+        }
+    }
+
+    private void showHistoryOfChat() {
+        try (InputStreamReader in = new InputStreamReader(new FileInputStream("history.txt"))) {
+            int x;
+            while ((x = in.read()) != -1) {
+                System.out.print((char) x);
+                msgArea.appendText(String.valueOf((char) x));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeHistoryOfChat(String msg) {
+        try (OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream("history.txt", true))) {
+            out.write(msg + " \n");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

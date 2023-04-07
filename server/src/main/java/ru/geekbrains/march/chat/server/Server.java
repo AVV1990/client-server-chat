@@ -59,7 +59,6 @@ public class Server {
     }
 
     // broadcastMassage - метод, который позволяет разослать всем клиентам сообщение
-
     public synchronized void broadcastMassage(String message) {
         for (ClientHandler clientHandler : clients) {
             clientHandler.sendMessage(message);
@@ -101,10 +100,6 @@ public class Server {
         }
     }
 
-
-    public synchronized void nikList (){
-
-    }
 
      // public void sendPrivateMsg(ClientHandler fromNickName, String msg, String toNickName) throws IOException{
         //     /w Bob Hello, Bob!
