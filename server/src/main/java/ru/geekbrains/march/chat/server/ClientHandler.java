@@ -18,11 +18,8 @@ public class ClientHandler {
     private DataOutputStream out; // исходящий поток
     private String username; //  имя пользователя
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
-    public String getUsername() {
+   public String getUsername() {
         return username;
     }
 
@@ -37,6 +34,7 @@ public class ClientHandler {
             try {
                 int countMsg = 0;
                 while (true) { // будет 2 цикла - 1 цикл это авторизации
+
                     String msg = in.readUTF(); // ждем сообщение
                     if (msg.startsWith("login ")) {
                         //  login Bob 100 - такое сообщение приходит на сервак
@@ -50,7 +48,10 @@ public class ClientHandler {
                         }
                         String login = tokens[1];
                         String password = tokens[2];
+
+
                         String userNickname = server.getAuthenticationProvider().getNicknameByLoginAndPassword(login,password);
+
                         if (userNickname == null) {
                             sendMessage("login_failed Введен некорректный логин/пароль");
                             continue;
@@ -138,7 +139,7 @@ public class ClientHandler {
                 return;
             }
             String newNickname = tokens[1];
-            if (server.isUserOnLine(newNickname)) {
+            if (server.getAuthenticationProvider().isNickBusy(newNickname)) {
                 sendMessage("Server: Такой ник уже занят");
                 return;
             }

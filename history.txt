@@ -1,14 +1,1 @@
-Клиент Cat  вошел в чат
-/clients_list Cat 
-Cat: привет 
-Cat:  как дела ? 
-Cat: у меня хорошоб а у тебя ? 
-Клиент Cat  вошел в чат 
-/clients_list Cat 
-Cat: привет 
-Клиент Cat  вошел в чат 
-/clients_list Cat 
-Клиент Cat  вошел в чат 
-/clients_list Cat 
-Клиент Cat  вошел в чат 
-/clients_list Cat 
+

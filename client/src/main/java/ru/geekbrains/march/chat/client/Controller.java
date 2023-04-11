@@ -103,7 +103,7 @@ public class Controller implements Initializable {
                         String msg = in.readUTF();
 
 //                      добавление локальной истории в текстовый файл на клиенте
-                        writeHistoryOfChat(msg);
+//                        writeHistoryOfChat(msg);
 
                         if (msg.startsWith("/")) {
                             if (msg.startsWith("/clients_list")) {
@@ -122,7 +122,7 @@ public class Controller implements Initializable {
                         }
                         msgArea.appendText(msg + "\n");
 
-                        showHistoryOfChat();
+//                        showHistoryOfChat();
 
                     }
 

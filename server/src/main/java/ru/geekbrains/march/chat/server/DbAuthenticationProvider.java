@@ -1,20 +1,32 @@
 package ru.geekbrains.march.chat.server;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class DbAuthenticationProvider implements AuthenticationProvider{
 
-    private  static Connection connection; //  объявили соединение
-    private static Statement stmt; // объявляем для создания запросов в бд
+    private  DbConnection dbConnection;
+
 
     @Override
-    public String getNicknameByLoginAndPassword (String login, String password) {
-        try (ResultSet rs = stmt.executeQuery("select nickname from nickname where login = '" + login + "' and password = '" + password + "';")) {
-            while (rs.next()) {
-                System.out.println();
+    public void init() {
+        dbConnection = new DbConnection(); //  при ините открываем
+    }
+    @Override
+    public String getNicknameByLoginAndPassword(String login, String password) {
+
+        String query = String.format("select nickname from users where login = '%s' and password = '%s'",login,password);
+
+//        String sql = "select nickname from users where login = 'Bob' and password = '100';";
+//        try (ResultSet rs = dbConnection.getStmt().executeQuery(sql)) {
+        try (ResultSet rs = dbConnection.getStmt().executeQuery(query)) {
+
+            if (rs.next()) {
+
                 // rs. next =  двигает курсор
-                return rs.getString(1);
-             }
+                System.out.println(rs.getString("nickname"));
+                return rs.getString("nickname");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -23,39 +35,30 @@ public class DbAuthenticationProvider implements AuthenticationProvider{
 
     @Override
     public void changeNickname(String oldNickname, String newNickname) {
-        throw new UnsupportedOperationException();
-    }
-
-
-    public static void connect () {
+        String query = String.format("update users set nickname = '%s' where nickname = '%s'",oldNickname,newNickname);
         try {
-            Class.forName("org.sqlite.JDBC"); //  загрузка драйвера в память ->  срабатывает классический блок инициализации -> и он себя зарегистрировал в драйвер менеджере
-            connection = DriverManager.getConnection("jdbc:sqlite:mydatabase.db"); // открытие соединения
-            stmt = connection.createStatement(); //  создаем Statement
-
-        } catch (ClassNotFoundException | SQLException e) {
+            //todo есть опасность наткнуться на неуникальный ник
+            dbConnection.getStmt().executeUpdate(query);
+        } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException("Невозможно подключиться к БД");
         }
     }
 
-    public static void disconnect (){ // закрывается в том же порядке,  в котором открывался
-        try {
-            if (stmt != null) {
-                stmt.close();
+    @Override
+    public boolean isNickBusy(String nickname) {
+        String query = String.format("select id from users where nickname = '%s';", nickname);
+        try (ResultSet rs = dbConnection.getStmt().executeQuery(query)) {
+            if (rs.next()) {
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        if(connection != null) { //  проверка обязательна: а не null  ли то,что мы закрываем
-            try {
-                connection.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
+        return false;
     }
 
-
+    @Override
+    public void shutdown() {
+        dbConnection.close();
+    }
 }
