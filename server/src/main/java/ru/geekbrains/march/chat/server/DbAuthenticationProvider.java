@@ -35,7 +35,7 @@ public class DbAuthenticationProvider implements AuthenticationProvider{
 
     @Override
     public void changeNickname(String oldNickname, String newNickname) {
-        String query = String.format("update users set nickname = '%s' where nickname = '%s'",oldNickname,newNickname);
+        String query = String.format("update users set nickname = '%s' where nickname = '%s'",newNickname,oldNickname);
         try {
             //todo есть опасность наткнуться на неуникальный ник
             dbConnection.getStmt().executeUpdate(query);
