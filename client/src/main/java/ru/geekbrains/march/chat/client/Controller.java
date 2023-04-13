@@ -34,6 +34,7 @@ public class Controller implements Initializable {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private HistoryManager historyManager;
     private String username; //  клиент должен знать под каким логином он сидит
 
     public void setUsername (String username) {
@@ -50,6 +51,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setUsername(null);
+       historyManager = new HistoryManager();
     }
 
     //  при на нажатии на кнопку логин
@@ -87,7 +89,10 @@ public class Controller implements Initializable {
                         String msg = in.readUTF();
                         if (msg.startsWith("login_ok")) {
                             System.out.println(msg);
-                            setUsername(msg.split("\\s")[1]); //   разделение по пробелу \\s  на 2 части  и мы берем 1-ую часть
+                            setUsername(msg.split("\\s")[2]); //   разделение по пробелу \\s  на 2 части  и мы берем 1-ую часть
+                            historyManager.init(msg.split("\\s")[1]);
+                            msgArea.clear();
+                            msgArea.appendText(historyManager.load());
                             break;
                         }
 
@@ -120,6 +125,7 @@ public class Controller implements Initializable {
                             }
                             continue;
                         }
+                        historyManager.write(msg + "\n");
                         msgArea.appendText(msg + "\n");
 
 //                        showHistoryOfChat();
@@ -174,9 +180,11 @@ public class Controller implements Initializable {
 
     public void disconnect ()  {
          setUsername(null); // username сбрасываем
+        historyManager.close();
           try {
                if (socket != null) {
                    socket.close();
+                   historyManager.close();
                }
            } catch ( IOException e) {
                 e.printStackTrace();

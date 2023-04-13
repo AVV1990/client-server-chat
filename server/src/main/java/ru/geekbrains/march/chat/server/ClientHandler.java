@@ -63,7 +63,7 @@ public class ClientHandler {
                         }
 
                         username = userNickname; //  если он не занят, то присваиваем его
-                        sendMessage("login_ok " + username);
+                        sendMessage("login_ok " + login + " " + username);
                         server.subscribe(this);//  после авторизации просим подписать клиента на рассылку
                         break; // после того, как  залогинился, выходим из цикла авторизации
                     }
