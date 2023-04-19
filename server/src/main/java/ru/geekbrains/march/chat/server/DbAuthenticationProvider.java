@@ -1,9 +1,14 @@
 package ru.geekbrains.march.chat.server;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DbAuthenticationProvider implements AuthenticationProvider{
+    private static final Logger log = LogManager.getLogger(DbAuthenticationProvider.class); // в каждом классе создаем свой логгер
 
     private  DbConnection dbConnection;
 
@@ -29,6 +34,8 @@ public class DbAuthenticationProvider implements AuthenticationProvider{
             }
         } catch (SQLException e) {
             e.printStackTrace();
+
+
         }
         return null;
     }
@@ -41,6 +48,7 @@ public class DbAuthenticationProvider implements AuthenticationProvider{
             dbConnection.getStmt().executeUpdate(query);
         } catch (SQLException e) {
             e.printStackTrace();
+
         }
     }
 

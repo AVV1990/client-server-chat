@@ -1,5 +1,9 @@
 package ru.geekbrains.march.chat.server;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,6 +12,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 public class ClientHandler {
+    private static final Logger log = LogManager.getLogger(ClientHandler.class); // в каждом классе создаем свой логгер
 
 // этот класс обработчик клиентов
 
@@ -40,7 +45,10 @@ public class ClientHandler {
                         //  login Bob 100 - такое сообщение приходит на сервак
 
                         String[] tokens = msg.split("\\s+");
-                        System.out.println(Arrays.toString(tokens));
+//                       System.out.println(Arrays.toString(tokens));
+
+
+
 
                         if (tokens.length != 3) {
                             sendMessage("login_failed Введите имя пользователя и пароль");
@@ -54,11 +62,13 @@ public class ClientHandler {
 
                         if (userNickname == null) {
                             sendMessage("login_failed Введен некорректный логин/пароль");
+                            log.error("Ошибка: Введен некорректный логин/пароль");
                             continue;
                         }
 
                         if (server.isUserOnLine(userNickname)) {
                             sendMessage("login_failed Учетная запись уже используется");
+                            log.error(" Ошибка: Учетная запись уже используется");
                             continue;
                         }
 
@@ -72,6 +82,7 @@ public class ClientHandler {
                 while (true) {
 
                     String msg = in.readUTF();
+                    log.info(username + " отправил сообщение: " + msg);
                     if (msg.startsWith("/")) {
                         executeCommand(msg);
                         continue;
@@ -154,6 +165,7 @@ public class ClientHandler {
     public void sendMessage(String message) {
         try {
             out.writeUTF(message);
+
         } catch (IOException e) {
             disconnect();
         }
@@ -164,6 +176,8 @@ public class ClientHandler {
         if (socket != null) {
             try {
                 socket.close();
+                log.error(" ошибка");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

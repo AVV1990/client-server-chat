@@ -1,5 +1,8 @@
 package ru.geekbrains.march.chat.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
+    private static final Logger log = LogManager.getLogger(Server.class); // в каждом классе создаем свой логгер
 
     private int port;
     private List<ClientHandler> clients;
@@ -25,21 +29,28 @@ public class Server {
         // подключаем клиентов
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 
-            System.out.println("Сервер запущен на порту " + port);
+//            System.out.println("Сервер запущен на порту " + port);
+            log.info("Сервер запущен на порту " + port);
+
 
 //            чтобы могло подключиться несколько клиентов, мы берем в бесконечный цикл
             while (true) {
-                System.out.println("Ждем нового клиента....");
+//                System.out.println("Ждем нового клиента....");
+                log.info("Ждем нового клиента....");
 
                 Socket socket = serverSocket.accept();
-                System.out.println("Клиент подключился");
+
+//                System.out.println("Клиент подключился");
+                log.info("Клиент подключился");
                 new ClientHandler(this, socket); //  добавляем клиентов в список рассылки  на СЕБЯ
             }
 
         } catch (IOException e) {
             e.printStackTrace();
+            log.error(" произошла ошибка");
         }finally {
             this.authenticationProvider.shutdown();
+
         }
     }
 

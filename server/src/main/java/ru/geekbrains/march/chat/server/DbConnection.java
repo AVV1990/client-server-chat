@@ -1,8 +1,14 @@
 package ru.geekbrains.march.chat.server;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 
 public class DbConnection {
+
+    private static final Logger log = LogManager.getLogger(DbConnection.class); // в каждом классе создаем свой логгер
 
     private Connection connection; //  объявили соединение
     private Statement stmt; // объявляем для создания запросов в бд
@@ -14,12 +20,14 @@ public class DbConnection {
     public DbConnection() {
         try {
 
-            Class.forName("org.sqlite.JDBC"); //  загрузка драйвера в память ->  срабатывает классический блок инициализации -> и он себя зарегистрировал в драйвер менеджере
-            this.connection = DriverManager.getConnection("jdbc:sqlite:database.db"); // открытие соединения
-            this.stmt = connection.createStatement();
+             Class.forName("org.sqlite.JDBC"); //  загрузка драйвера в память ->  срабатывает классический блок инициализации -> и он себя зарегистрировал в драйвер менеджере
+           this.connection = DriverManager.getConnection("jdbc:sqlite:database.db"); // открытие соединения
+           this.stmt = connection.createStatement();
 
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException("Невозможно подключиться к БД");
+          throw new RuntimeException("Невозможно подключиться к БД");
+//            log.fatal ("Невозможно подключиться к БД...");
+
         }
     }
 
@@ -31,6 +39,7 @@ public class DbConnection {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+//            log.throwing(Level.ERROR, e);
         }
 
         if(connection != null) { //  проверка обязательна: а не null  ли то,что мы закрываем
@@ -38,6 +47,7 @@ public class DbConnection {
                 connection.close();
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
+//                log.throwing(Level.ERROR, throwables);
             }
         }
     }
